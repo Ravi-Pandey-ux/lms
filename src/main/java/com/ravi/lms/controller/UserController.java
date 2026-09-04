@@ -2,10 +2,9 @@ package com.ravi.lms.controller;
 
 import com.ravi.lms.entity.User;
 import com.ravi.lms.service.UserService;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/users")
@@ -20,5 +19,15 @@ public class UserController {
     public User register(@RequestBody User user) {
         return userService.registerUser(user);
 
+    }
+
+    @GetMapping("/{id}")
+    public User getById(@PathVariable Long id) {
+        return userService.getUserById(id);
+    }
+
+    @GetMapping
+    public List<User> getAll() {
+        return userService.getAllUsers();
     }
 }
