@@ -5,7 +5,7 @@ import com.ravi.lms.repository.UserRepository;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.Optional;
+import java.util.List;
 
 @Service
 public class UserService {
@@ -27,7 +27,11 @@ public class UserService {
     }
 
     public User getUserById(Long id) {
-        return userRepository.findById(id).orElseThrow(() -> new RuntimeException("User not found wit Id:" + id));
+        return userRepository.findById(id).orElseThrow(() -> new RuntimeException("User not found wit Id:   " + id));
 
+    }
+
+    public List<User> getAllUsers() {
+        return userRepository.findAll();
     }
 }
