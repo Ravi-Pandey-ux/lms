@@ -2,6 +2,7 @@ package com.ravi.lms.service;
 
 import com.ravi.lms.entity.Course;
 import com.ravi.lms.entity.User;
+import com.ravi.lms.exception.ResourceNotFoundException;
 import com.ravi.lms.repository.CourseRepository;
 import com.ravi.lms.repository.UserRepository;
 import org.springframework.stereotype.Service;
@@ -20,10 +21,10 @@ public class CourseService {
 
     public Course createCourse(Course course) {
         User instructor = userRepository.findById(course.getInstructor().getId())
-                .orElseThrow(() -> new RuntimeException("Instructor not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("instructor not found"));
 
         if (instructor.getRole() != User.Role.INSTRUCTOR) {
-            throw new RuntimeException("Only instructors can create courses");
+            throw new IllegalArgumentException("Only instructors can create courses");
         }
 
         course.setInstructor(instructor);
