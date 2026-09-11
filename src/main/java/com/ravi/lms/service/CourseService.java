@@ -1,5 +1,8 @@
 package com.ravi.lms.service;
 
+import com.ravi.lms.dto.CourseCreateRequest;
+import com.ravi.lms.dto.CourseResponse;
+import com.ravi.lms.dto.UserResponse;
 import com.ravi.lms.entity.Course;
 import com.ravi.lms.entity.User;
 import com.ravi.lms.exception.ResourceNotFoundException;
@@ -19,16 +22,32 @@ public class CourseService {
         this.userRepository = userRepository;
     }
 
-    public Course createCourse(Course course) {
-        User instructor = userRepository.findById(course.getInstructor().getId())
+    public CourseResponse createCourse(CourseCreateRequest request) {
+        User instructor = userRepository.findById(request.instructorId())
                 .orElseThrow(() -> new ResourceNotFoundException("instructor not found"));
 
         if (instructor.getRole() != User.Role.INSTRUCTOR) {
             throw new IllegalArgumentException("Only instructors can create courses");
         }
-
+        Course course = new Course();
+        course.setTitle(request.title());
+        course.setDescription(request.description());
         course.setInstructor(instructor);
-        return courseRepository.save(course);
+        course.setCapacity(request.capacity());
+        Course savedCourse = courseRepository.save(course);
+        UserResponse instructorResponse = new UserResponse(
+                instructor.getId(),
+                instructor.getUsername(),
+                instructor.getEmail()
+                , instructor.getRole().toString()
+        );
+
+        return new CourseResponse(
+                savedCourse.getId(),
+                savedCourse.getTitle(),
+                savedCourse.getDescription(),
+                savedCourse.getCapacity(),
+                instructorResponse);
     }
 
     public List<Course> getCoursesByInstructor(Long instructorId) {

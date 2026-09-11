@@ -1,7 +1,11 @@
 package com.ravi.lms.controller;
 
+import com.ravi.lms.dto.CourseCreateRequest;
+import com.ravi.lms.dto.CourseResponse;
 import com.ravi.lms.entity.Course;
 import com.ravi.lms.service.CourseService;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -26,8 +30,9 @@ public class CourseController {
     }
 
     @PostMapping
-    public Course createCourse(@RequestBody Course course) {
-        return courseService.createCourse(course);
+    public ResponseEntity<CourseResponse> createCourse(@RequestBody CourseCreateRequest request) {
+        CourseResponse response=courseService.createCourse(request);
+        return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 
 }
