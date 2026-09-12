@@ -2,7 +2,6 @@ package com.ravi.lms.controller;
 
 import com.ravi.lms.dto.CourseCreateRequest;
 import com.ravi.lms.dto.CourseResponse;
-import com.ravi.lms.entity.Course;
 import com.ravi.lms.service.CourseService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,18 +19,20 @@ public class CourseController {
     }
 
     @GetMapping
-    public List<Course> getAllCourses() {
-        return courseService.getAllCourses();
+    public ResponseEntity<List<CourseResponse>> getAllCourses() {
+        List<CourseResponse> courseResponses = courseService.getAllCourses();
+        return ResponseEntity.ok(courseResponses);
     }
 
     @GetMapping("/instructor/{instructorId}")
-    public List<Course> getCourseByInstructor(@PathVariable Long instructorId) {
-        return courseService.getCoursesByInstructor(instructorId);
+    public ResponseEntity<List<CourseResponse>> getCourseByInstructor(@PathVariable Long instructorId) {
+        List<CourseResponse> courseResponses = courseService.getCoursesByInstructor(instructorId);
+        return ResponseEntity.ok(courseResponses);
     }
 
     @PostMapping
     public ResponseEntity<CourseResponse> createCourse(@RequestBody CourseCreateRequest request) {
-        CourseResponse response=courseService.createCourse(request);
+        CourseResponse response = courseService.createCourse(request);
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 

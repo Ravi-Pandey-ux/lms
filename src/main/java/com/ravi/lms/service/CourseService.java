@@ -23,8 +23,7 @@ public class CourseService {
     }
 
     public CourseResponse createCourse(CourseCreateRequest request) {
-        User instructor = userRepository.findById(request.instructorId())
-                .orElseThrow(() -> new ResourceNotFoundException("instructor not found"));
+        User instructor = userRepository.findById(request.instructorId()).orElseThrow(() -> new ResourceNotFoundException("instructor not found"));
 
         if (instructor.getRole() != User.Role.INSTRUCTOR) {
             throw new IllegalArgumentException("Only instructors can create courses");
@@ -35,27 +34,24 @@ public class CourseService {
         course.setInstructor(instructor);
         course.setCapacity(request.capacity());
         Course savedCourse = courseRepository.save(course);
-        UserResponse instructorResponse = new UserResponse(
-                instructor.getId(),
-                instructor.getUsername(),
-                instructor.getEmail()
-                , instructor.getRole().toString()
-        );
+        UserResponse instructorResponse = new UserResponse(instructor.getId(), instructor.getUsername(), instructor.getEmail(), instructor.getRole().toString());
 
-        return new CourseResponse(
-                savedCourse.getId(),
-                savedCourse.getTitle(),
-                savedCourse.getDescription(),
-                savedCourse.getCapacity(),
-                instructorResponse);
+        return new CourseResponse(savedCourse.getId(), savedCourse.getTitle(), savedCourse.getDescription(), savedCourse.getCapacity(), instructorResponse);
     }
 
-    public List<Course> getCoursesByInstructor(Long instructorId) {
-        return courseRepository.findByInstructorId(instructorId);
+    public List<CourseResponse> getCoursesByInstructor(Long instructorId) {
+        return courseRepository.findByInstructorId(instructorId).stream().map(course -> {
+            UserResponse instructorResponse = new UserResponse(course.getInstructor().getId(), course.getInstructor().getUsername(), course.getInstructor().getEmail(), course.getInstructor().getRole().toString());
+            return new CourseResponse(course.getId(), course.getTitle(), course.getDescription(), course.getCapacity(), instructorResponse);
+        }).toList();
+
     }
 
-    public List<Course> getAllCourses() {
-        return courseRepository.findAll();
+    public List<CourseResponse> getAllCourses() {
+        return courseRepository.findAll().stream().map(course -> {
+            UserResponse instructorResponse = new UserResponse(course.getInstructor().getId(), course.getInstructor().getUsername(), course.getInstructor().getEmail(), course.getInstructor().getRole().toString());
+            return new CourseResponse(course.getId(), course.getTitle(), course.getDescription(), course.getCapacity(), instructorResponse);
+        }).toList();
     }
 
 
