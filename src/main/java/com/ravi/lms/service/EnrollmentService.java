@@ -1,5 +1,9 @@
 package com.ravi.lms.service;
 
+import com.ravi.lms.dto.CourseResponse;
+import com.ravi.lms.dto.EnrollmentRequest;
+import com.ravi.lms.dto.EnrollmentResponse;
+import com.ravi.lms.dto.UserResponse;
 import com.ravi.lms.entity.Course;
 import com.ravi.lms.entity.Enrollment;
 import com.ravi.lms.entity.User;
@@ -26,14 +30,14 @@ public class EnrollmentService {
         this.courseRepository = courseRepository;
     }
 
-    public Enrollment enrollStudent(Long studentId, Long courseId) {
-        User student = userRepository.findById(studentId).orElseThrow(() -> new ResourceNotFoundException("student not found "));
-        Course course = courseRepository.findById(courseId).orElseThrow(() -> new ResourceNotFoundException("course not found"));
-        long currentEnrollments = enrollmentRepository.countByCourseId(courseId);
+    public EnrollmentResponse enrollStudent(EnrollmentRequest request) {
+        User student = userRepository.findById(request.studentId()).orElseThrow(() -> new ResourceNotFoundException("student not found "));
+        Course course = courseRepository.findById(request.courseId()).orElseThrow(() -> new ResourceNotFoundException("course not found"));
+        long currentEnrollments = enrollmentRepository.countByCourseId(request.courseId());
         if (currentEnrollments >= course.getCapacity()) {
             throw new CapacityExceededException("course capacity exceeded");
         }
-        if (enrollmentRepository.existsByStudentIdAndCourseId(studentId, courseId)) {
+        if (enrollmentRepository.existsByStudentIdAndCourseId(request.studentId(), request.courseId())) {
             throw new DuplicateResourceException("student already enrolled in this course");
         }
         Enrollment enrollment = new Enrollment();
@@ -41,7 +45,19 @@ public class EnrollmentService {
         enrollment.setCourse(course);
         enrollment.setEnrolledAt(LocalDateTime.now());
         enrollment.setStatus(Enrollment.Status.ACTIVE);
-        return enrollmentRepository.save(enrollment);
+        Enrollment savedEnrollment = enrollmentRepository.save(enrollment);
 
+        return mapToResponse(savedEnrollment);
+    }
+
+    private EnrollmentResponse mapToResponse(Enrollment enrollment) {
+        UserResponse studentResponse = new UserResponse(enrollment.getStudent().getId(), enrollment.getStudent().getUsername()
+                , enrollment.getStudent().getEmail(), enrollment.getStudent().getRole().toString());
+
+        CourseResponse courseResponse = new CourseResponse(enrollment.getCourse().getId(), enrollment.getCourse().getTitle(),
+                enrollment.getCourse().getDescription(), enrollment.getCourse().getCapacity(), null);
+
+        return new EnrollmentResponse(enrollment.getId(), studentResponse, courseResponse, enrollment.getEnrolledAt(),
+                enrollment.getStatus().toString());
     }
 }
