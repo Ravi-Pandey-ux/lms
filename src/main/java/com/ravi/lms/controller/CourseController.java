@@ -3,6 +3,8 @@ package com.ravi.lms.controller;
 import com.ravi.lms.dto.CourseCreateRequest;
 import com.ravi.lms.dto.CourseResponse;
 import com.ravi.lms.service.CourseService;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -19,8 +21,8 @@ public class CourseController {
     }
 
     @GetMapping
-    public ResponseEntity<List<CourseResponse>> getAllCourses() {
-        List<CourseResponse> courseResponses = courseService.getAllCourses();
+    public ResponseEntity<Page<CourseResponse>> getAllCourses(Pageable pageable) {
+        Page<CourseResponse> courseResponses = courseService.getAllCourses(pageable);
         return ResponseEntity.ok(courseResponses);
     }
 

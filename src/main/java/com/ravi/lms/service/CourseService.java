@@ -8,6 +8,8 @@ import com.ravi.lms.entity.User;
 import com.ravi.lms.exception.ResourceNotFoundException;
 import com.ravi.lms.repository.CourseRepository;
 import com.ravi.lms.repository.UserRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -25,9 +27,6 @@ public class CourseService {
     public CourseResponse createCourse(CourseCreateRequest request) {
         User instructor = userRepository.findById(request.instructorId()).orElseThrow(() -> new ResourceNotFoundException("instructor not found"));
 
-        if (instructor.getRole() != User.Role.INSTRUCTOR) {
-            throw new IllegalArgumentException("Only instructors can create courses");
-        }
         Course course = new Course();
         course.setTitle(request.title());
         course.setDescription(request.description());
@@ -47,11 +46,11 @@ public class CourseService {
 
     }
 
-    public List<CourseResponse> getAllCourses() {
-        return courseRepository.findAll().stream().map(course -> {
+    public Page<CourseResponse> getAllCourses(Pageable pageable) {
+        return courseRepository.findAll(pageable).map(course -> {
             UserResponse instructorResponse = new UserResponse(course.getInstructor().getId(), course.getInstructor().getUsername(), course.getInstructor().getEmail(), course.getInstructor().getRole().toString());
             return new CourseResponse(course.getId(), course.getTitle(), course.getDescription(), course.getCapacity(), instructorResponse);
-        }).toList();
+        });
     }
 
 
