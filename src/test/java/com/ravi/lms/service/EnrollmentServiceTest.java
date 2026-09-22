@@ -6,6 +6,7 @@ import com.ravi.lms.entity.Course;
 import com.ravi.lms.entity.Enrollment;
 import com.ravi.lms.entity.User;
 import com.ravi.lms.exception.CapacityExceededException;
+import com.ravi.lms.exception.DuplicateResourceException;
 import com.ravi.lms.exception.ResourceNotFoundException;
 import com.ravi.lms.repository.CourseRepository;
 import com.ravi.lms.repository.EnrollmentRepository;
@@ -100,5 +101,34 @@ public class EnrollmentServiceTest {
         assertThrows(CapacityExceededException.class, () -> enrollmentService.enrollStudent(request));
         verify(enrollmentRepository, never()).save(any(Enrollment.class));
     }
+
+    @Test
+    void enrollStudent_shouldThrowException_whenDuplicateEnrollment() {
+        EnrollmentRequest request = new EnrollmentRequest(1L, 1L);
+        User student = new User();
+        student.setId(1L);
+
+        Course course = new Course();
+        course.setId(1L);
+        course.setCapacity(5);
+        when(userRepository.findById(1L)).thenReturn(Optional.of(student));
+        when(courseRepository.findById(1L)).thenReturn(Optional.of(course));
+        when(enrollmentRepository.countByCourseId(1L)).thenReturn(2L);
+        when(enrollmentRepository.existsByStudentIdAndCourseId(1L, 1L)).thenReturn(true);
+        assertThrows(DuplicateResourceException.class, () -> enrollmentService.enrollStudent(request));
+        verify(enrollmentRepository, never()).save(any(Enrollment.class));
+    }
+
+    @Test
+    void enrollStudent_shouldThrowException_whenCourseNotFound() {
+        EnrollmentRequest request = new EnrollmentRequest(1L, 1L);
+        User student = new User();
+        student.setId(1L);
+        when(userRepository.findById(1L)).thenReturn(Optional.of(student));
+        when(courseRepository.findById(1L)).thenReturn(Optional.empty());
+        assertThrows(ResourceNotFoundException.class, () -> enrollmentService.enrollStudent(request));
+        verify(enrollmentRepository, times(0)).save(any(Enrollment.class));
+    }
+
 
 }
