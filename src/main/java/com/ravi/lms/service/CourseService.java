@@ -12,8 +12,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-
 @Service
 public class CourseService {
     private final CourseRepository courseRepository;
@@ -38,12 +36,11 @@ public class CourseService {
         return new CourseResponse(savedCourse.getId(), savedCourse.getTitle(), savedCourse.getDescription(), savedCourse.getCapacity(), instructorResponse);
     }
 
-    public List<CourseResponse> getCoursesByInstructor(Long instructorId) {
-        return courseRepository.findByInstructorId(instructorId).stream().map(course -> {
+    public Page<CourseResponse> getCoursesByInstructor(Long instructorId, Pageable pageable) {
+        return courseRepository.findByInstructorId(instructorId, pageable).map(course -> {
             UserResponse instructorResponse = new UserResponse(course.getInstructor().getId(), course.getInstructor().getUsername(), course.getInstructor().getEmail(), course.getInstructor().getRole().toString());
             return new CourseResponse(course.getId(), course.getTitle(), course.getDescription(), course.getCapacity(), instructorResponse);
-        }).toList();
-
+        });
     }
 
     public Page<CourseResponse> getAllCourses(Pageable pageable) {

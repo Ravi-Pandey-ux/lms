@@ -4,6 +4,7 @@ import com.ravi.lms.dto.UserRegisterRequest;
 import com.ravi.lms.dto.UserResponse;
 import com.ravi.lms.entity.User;
 import com.ravi.lms.exception.DuplicateResourceException;
+import com.ravi.lms.exception.ResourceNotFoundException;
 import com.ravi.lms.repository.UserRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -12,6 +13,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -61,7 +63,46 @@ public class UserServiceTest {
         assertThrows(DuplicateResourceException.class, () -> {
             userService.registerUser(request);
         });
+    }
 
+    @Test
+    void getUserById_shouldReturnUserResponse_whenUserExists() {
+        User user = new User();
+        user.setId(1L);
+        user.setUsername("student1");
+        user.setEmail("test@example.com");
+        user.setRole(User.Role.STUDENT);
 
+        when(userRepository.findById(1L)).thenReturn(Optional.of(user));
+        UserResponse response = userService.getUserById(1L);
+        assertNotNull(response);
+        assertEquals("student1", response.username());
+        assertEquals("test@example.com", response.email());
+    }
+
+    @Test
+    void getUserById_shouldThrowException_whenUserDoesNotExist() {
+        when(userRepository.findById(1L)).thenReturn(Optional.empty());
+        assertThrows(ResourceNotFoundException.class, () -> userService.getUserById(1L));
+    }
+
+    @Test
+    void getAllUsers_shouldReturnListOfUserResponses() {
+        User user1 = new User();
+        user1.setId(1L);
+        user1.setUsername("student1");
+        user1.setEmail("student1@test.com");
+        user1.setRole(User.Role.STUDENT);
+        User user2 = new User();
+        user2.setId(2L);
+        user2.setUsername("student2");
+        user2.setEmail("student2@test.com");
+        user2.setRole(User.Role.STUDENT);
+        when(userRepository.findAll()).thenReturn(List.of(user1, user2));
+        List<UserResponse> result = userService.getAllUsers();
+        assertNotNull(result);
+        assertEquals(2, result.size());
+        assertEquals("student1", result.get(0).username());
     }
 }
+

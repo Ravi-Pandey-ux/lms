@@ -9,8 +9,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-
 @RestController
 @RequestMapping("/api/courses")
 public class CourseController {
@@ -27,8 +25,8 @@ public class CourseController {
     }
 
     @GetMapping("/instructor/{instructorId}")
-    public ResponseEntity<List<CourseResponse>> getCourseByInstructor(@PathVariable Long instructorId) {
-        List<CourseResponse> courseResponses = courseService.getCoursesByInstructor(instructorId);
+    public ResponseEntity<Page<CourseResponse>> getCourseByInstructor(@PathVariable Long instructorId, Pageable pageable) {
+        Page<CourseResponse> courseResponses = courseService.getCoursesByInstructor(instructorId, pageable);
         return ResponseEntity.ok(courseResponses);
     }
 
