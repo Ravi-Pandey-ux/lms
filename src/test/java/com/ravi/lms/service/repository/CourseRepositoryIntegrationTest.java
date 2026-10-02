@@ -23,6 +23,11 @@ public class CourseRepositoryIntegrationTest {
     @ServiceConnection
     static MySQLContainer<?> mysql = new MySQLContainer<>();
 
+    @org.springframework.test.context.DynamicPropertySource
+    static void configureProperties(org.springframework.test.context.DynamicPropertyRegistry registry) {
+        registry.add("spring.jpa.hibernate.ddl-auto", () -> "create-drop");
+    }
+
     @Autowired
     private CourseRepository courseRepository;
     @Autowired
