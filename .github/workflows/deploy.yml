@@ -18,6 +18,11 @@ jobs:
           distribution: 'temurin'
 
       - name: Build and test with Maven
+        env:
+          DB_URL: ${{ secrets.DB_URL }}
+          DB_USERNAME: ${{ secrets.DB_USERNAME }}
+          DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+          JWT_SECRET: ${{ secrets.JWT_SECRET }}
         run: |
           chmod +x mvnw
           ./mvnw clean package
@@ -29,21 +34,4 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: SSH into server and deploy
-        uses: appleboy/ssh-action@v1.0.3
-        with:
-          host: ${{ secrets.EC2_HOST }}
-          username: ubuntu
-          key: ${{ secrets.EC2_SSH_KEY }}
-          script: |
-            cd lms
-            git pull origin main
-            sudo docker stop lms-container || true
-            sudo docker rm lms-container || true
-            sudo docker build -t lms-app .
-            sudo docker run -d -p 8080:8080 --name lms-container \
-              -e DB_URL="${{ secrets.DB_URL }}" \
-              -e DB_USERNAME="${{ secrets.DB_USERNAME }}" \
-              -e DB_PASSWORD="${{ secrets.DB_PASSWORD }}" \
-              -e JWT_SECRET="${{ secrets.JWT_SECRET }}" \
-              lms-app java -Xmx400m -jar app.jar
+      - name: SSH into
