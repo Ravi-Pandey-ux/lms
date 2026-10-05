@@ -3,6 +3,8 @@ package com.ravi.lms.security;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
+import jakarta.annotation.PostConstruct;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
@@ -12,11 +14,17 @@ import java.util.function.Function;
 @Component
 public class JwtUtil {
 
+    @Value("${jwt.secret}")
+    private String SECRET_KEY;
 
-    private final String SECRET_KEY = "ye-ek-lambi-secret-key-hai-jo-kam-se-kam-32-characters-honi-chahiye";
-    private final SecretKey key = Keys.hmacShaKeyFor(SECRET_KEY.getBytes());
+    private SecretKey key;
 
     private final long EXPIRATION_TIME = 1000 * 60 * 60 * 10; // 10 ghante
+
+    @PostConstruct
+    public void init() {
+        this.key = Keys.hmacShaKeyFor(SECRET_KEY.getBytes());
+    }
 
     public String generateToken(String username) {
         return Jwts.builder()

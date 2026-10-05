@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.data.jpa.test.autoconfigure.DataJpaTest;
 import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.test.context.DynamicPropertySource;
 import org.testcontainers.containers.MySQLContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
@@ -23,7 +24,7 @@ public class CourseRepositoryIntegrationTest {
     @ServiceConnection
     static MySQLContainer<?> mysql = new MySQLContainer<>();
 
-    @org.springframework.test.context.DynamicPropertySource
+    @DynamicPropertySource
     static void configureProperties(org.springframework.test.context.DynamicPropertyRegistry registry) {
         registry.add("spring.jpa.hibernate.ddl-auto", () -> "create-drop");
     }
