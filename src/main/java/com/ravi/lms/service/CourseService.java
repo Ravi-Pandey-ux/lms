@@ -8,6 +8,8 @@ import com.ravi.lms.entity.User;
 import com.ravi.lms.exception.ResourceNotFoundException;
 import com.ravi.lms.repository.CourseRepository;
 import com.ravi.lms.repository.UserRepository;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -22,6 +24,7 @@ public class CourseService {
         this.userRepository = userRepository;
     }
 
+    @CacheEvict(value = "courses", allEntries = true)
     public CourseResponse createCourse(CourseCreateRequest request) {
         User instructor = userRepository.findById(request.instructorId()).orElseThrow(() -> new ResourceNotFoundException("instructor not found"));
 
@@ -43,6 +46,7 @@ public class CourseService {
         });
     }
 
+    @Cacheable(value = "courses")
     public Page<CourseResponse> getAllCourses(Pageable pageable) {
         return courseRepository.findAll(pageable).map(course -> {
             UserResponse instructorResponse = new UserResponse(course.getInstructor().getId(), course.getInstructor().getUsername(), course.getInstructor().getEmail(), course.getInstructor().getRole().toString());
