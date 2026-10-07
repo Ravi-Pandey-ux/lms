@@ -32,6 +32,9 @@ jobs:
       - name: Run Checkstyle
         run: ./mvnw checkstyle:check
 
+      - name: Run PMD
+        run: ./mvnw pmd:check
+
   deploy:
     needs: build
     runs-on: ubuntu-latest
