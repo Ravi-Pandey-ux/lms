@@ -49,8 +49,11 @@ jobs:
             sudo docker rm lms-container || true
             sudo docker build -t lms-app .
             sudo docker run -d -p 8080:8080 --name lms-container \
+              --network lms-network \
               -e DB_URL="${{ secrets.DB_URL }}" \
               -e DB_USERNAME="${{ secrets.DB_USERNAME }}" \
               -e DB_PASSWORD="${{ secrets.DB_PASSWORD }}" \
               -e JWT_SECRET="${{ secrets.JWT_SECRET }}" \
+              -e REDIS_HOST="redis-container" \
+              -e REDIS_PORT="6379" \
               lms-app java -Xmx400m -jar app.jar
