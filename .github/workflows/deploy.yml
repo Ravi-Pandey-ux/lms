@@ -29,6 +29,9 @@ jobs:
           chmod +x mvnw
           ./mvnw clean package
 
+      - name: Run Checkstyle
+        run: ./mvnw checkstyle:check
+
   deploy:
     needs: build
     runs-on: ubuntu-latest
