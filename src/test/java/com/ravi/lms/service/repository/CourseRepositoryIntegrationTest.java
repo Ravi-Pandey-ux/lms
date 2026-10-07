@@ -1,5 +1,6 @@
 package com.ravi.lms.service.repository;
 
+import com.ravi.lms.config.CacheConfig;
 import com.ravi.lms.entity.Course;
 import com.ravi.lms.entity.User;
 import com.ravi.lms.repository.CourseRepository;
@@ -8,7 +9,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.data.jpa.test.autoconfigure.DataJpaTest;
 import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
-import org.springframework.cache.annotation.CacheConfig;
 import org.springframework.context.annotation.Import;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.test.context.DynamicPropertyRegistry;
