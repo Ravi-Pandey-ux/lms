@@ -17,6 +17,11 @@ jobs:
           java-version: '21'
           distribution: 'temurin'
 
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
       - name: Build and test with Maven
         env:
           DB_URL: ${{ secrets.DB_URL }}
@@ -34,6 +39,11 @@ jobs:
 
       - name: Run PMD
         run: ./mvnw pmd:check
+
+      - name: SonarCloud analysis
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        run: ./mvnw org.sonarsource.scanner.maven:sonar-maven-plugin:5.0.0.4389:sonar
 
   deploy:
     needs: build
