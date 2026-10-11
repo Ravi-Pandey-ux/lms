@@ -1,4 +1,6 @@
 package com.ravi.lms.dto;
 
-public record UserResponse(Long id, String username, String email, String role) {
+import java.io.Serializable;
+
+public record UserResponse(Long id, String username, String email, String role) implements Serializable {
 }

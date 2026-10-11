@@ -1,4 +1,7 @@
 package com.ravi.lms.dto;
 
-public record CourseResponse(Long id, String title, String description, Integer capacity, UserResponse instructor) {
+import java.io.Serializable;
+
+public record CourseResponse(Long id, String title, String description, Integer capacity,
+                             UserResponse instructor) implements Serializable {
 }
