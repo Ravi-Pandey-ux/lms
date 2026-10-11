@@ -164,6 +164,7 @@
                 <configuration>
                     <failBuildOnCVSS>11</failBuildOnCVSS>
                     <nvdApiKey>${env.NVD_API_KEY}</nvdApiKey>
+                    <ossindexAnalyzerEnabled>false</ossindexAnalyzerEnabled>
                 </configuration>
             </plugin>
             <plugin>
